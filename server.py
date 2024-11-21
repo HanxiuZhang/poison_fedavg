@@ -16,7 +16,7 @@ def create_clients(args, train_data_loaders, test_data_loader):
 
     return clients
 
-def train_subset_of_clients(epoch, args, clients, poisoned_workers):
+def train_subset_of_clients(epoch, args, clients, poisoned_workers, defense=None):
     """
     Train a subset of clients per round.
 
@@ -43,7 +43,14 @@ def train_subset_of_clients(epoch, args, clients, poisoned_workers):
 
     args.get_logger().info("Averaging client parameters")
     parameters = [clients[client_idx].get_nn_parameters() for client_idx in random_workers]
-    new_nn_params = average_nn_parameters(parameters)
+    
+    if defense is not None:
+        if defense == "filtering":
+            new_nn_params = average_filtering(parameters)
+        elif defense == "normalization":
+            new_nn_params = average_normalizarion(parameters)
+    else:
+        new_nn_params = average_nn_parameters(parameters)
 
     for client in clients:
         args.get_logger().info("Updating parameters on client #{}", str(client.get_client_index()))
@@ -58,14 +65,14 @@ def run_machine_learning(clients, args, poisoned_workers):
     epoch_test_set_results = []
     worker_selection = []
     for epoch in range(1, args.get_num_epochs() + 1):
-        results, workers_selected = train_subset_of_clients(epoch, args, clients, poisoned_workers)
+        results, workers_selected = train_subset_of_clients(epoch, args, clients, poisoned_workers, defense=None)
 
         epoch_test_set_results.append(results)
         worker_selection.append(workers_selected)
 
     return convert_results_to_csv(epoch_test_set_results), worker_selection
 
-def run_exp(replacement_method, num_poisoned_workers, KWARGS, client_selection_strategy, idx):
+def run_exp(replacement_method, num_poisoned_workers, KWARGS, client_selection_strategy, idx,defense=None):
     log_files, results_files, models_folders, worker_selections_files = generate_experiment_ids(idx, 1)
 
     # Initialize logger
@@ -92,7 +99,7 @@ def run_exp(replacement_method, num_poisoned_workers, KWARGS, client_selection_s
 
     clients = create_clients(args, train_data_loaders, test_data_loader)
 
-    results, worker_selection = run_machine_learning(clients, args, poisoned_workers)
+    results, worker_selection = run_machine_learning(clients, args, poisoned_workers,defense)
     save_results(results, results_files[0])
     save_results(worker_selection, worker_selections_files[0])
 
