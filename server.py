@@ -58,21 +58,21 @@ def train_subset_of_clients(epoch, args, clients, poisoned_workers, defense=None
 
     return clients[0].test(), random_workers
 
-def run_machine_learning(clients, args, poisoned_workers):
+def run_machine_learning(clients, args, poisoned_workers,defense=None):
     """
     Complete machine learning over a series of clients.
     """
     epoch_test_set_results = []
     worker_selection = []
     for epoch in range(1, args.get_num_epochs() + 1):
-        results, workers_selected = train_subset_of_clients(epoch, args, clients, poisoned_workers, defense=None)
+        results, workers_selected = train_subset_of_clients(epoch, args, clients, poisoned_workers, defense)
 
         epoch_test_set_results.append(results)
         worker_selection.append(workers_selected)
 
     return convert_results_to_csv(epoch_test_set_results), worker_selection
 
-def run_exp(replacement_method, num_poisoned_workers, KWARGS, client_selection_strategy, idx,defense=None):
+def run_exp(replacement_method, num_poisoned_workers, KWARGS, client_selection_strategy, idx, defense=None):
     log_files, results_files, models_folders, worker_selections_files = generate_experiment_ids(idx, 1)
 
     # Initialize logger
