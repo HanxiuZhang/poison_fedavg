@@ -13,7 +13,7 @@ class Arguments:
 
         self.batch_size = 10
         self.test_batch_size = 1000
-        self.epochs = 10
+        self.epochs = 100
         self.lr = 0.01
         self.momentum = 0.5
         self.cuda = True
@@ -21,8 +21,8 @@ class Arguments:
         self.log_interval = 100
         self.kwargs = {}
 
-        self.scheduler_step_size = 50
-        self.scheduler_gamma = 0.5
+        self.scheduler_step_size = 25
+        self.scheduler_gamma = 0.0001
         self.min_lr = 1e-10
 
         self.round_worker_selection_strategy = None
@@ -36,13 +36,16 @@ class Arguments:
         self.epoch_save_end_suffix = "end"
 
         self.num_workers = 10
-        self.num_poisoned_workers = 1 # change in main.py
+        self.num_poisoned_workers = 5 # change in main.py
 
-        #self.net = Cifar10CNN
-        self.net = FashionMNISTCNN
-
-        self.train_data_loader_pickle_path = "/mnt/ssd1/zhanghanxiu/dataset/FashionMNIST/train_data_loader.pickle"
-        self.test_data_loader_pickle_path = "/mnt/ssd1/zhanghanxiu/dataset/FashionMNIST/test_data_loader.pickle"
+        self.net = Cifar10CNN
+        self.train_data_loader_pickle_path = "/mnt/ssd1/zhanghanxiu/dataset/cifar10/train_data_loader.pickle"
+        self.test_data_loader_pickle_path = "/mnt/ssd1/zhanghanxiu/dataset/cifar10/test_data_loader.pickle"
+        
+        
+        # self.net = FashionMNISTCNN
+        # self.train_data_loader_pickle_path = "/mnt/ssd1/zhanghanxiu/dataset/FashionMNIST/train_data_loader.pickle"
+        # self.test_data_loader_pickle_path = "/mnt/ssd1/zhanghanxiu/dataset/FashionMNIST/test_data_loader.pickle"
 
         self.loss_function = torch.nn.CrossEntropyLoss
 
